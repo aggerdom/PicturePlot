@@ -56,7 +56,7 @@ while number_of_rotations ~= max_rotations
         if h_current == h_starting
             direction = 1;
             pause(pause_per_degree*3);
-            number_of_rotations  = number_of_rotations + 1
+            number_of_rotations  = number_of_rotations + 1;
         end
     end
     pause(pause_per_degree);

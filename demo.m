@@ -22,14 +22,14 @@ demoimages = {'coins.png',...
     'toysflash.png', ...
     'toysnoflash.png', ...
     'westconcordaerial.png', ...
-    'westconcordorthophoto.png'}
+    'westconcordorthophoto.png'};
 
 d = randi([-10,10],[length(demoimages),3]);
 imagecoords.X = d(:,1);
 imagecoords.Y = d(:,2);
 imagecoords.Z = d(:,3);
 
-myplotinstance = PicturePlot(imagecoords.X,imagecoords.Y,imagecoords.Z,demoimages',2)
+myplotinstance = PicturePlot(imagecoords.X,imagecoords.Y,imagecoords.Z,demoimages',2);
 
 %% Add some UI elements to make it more easy to work with and do some other
 % stuff ot the plot

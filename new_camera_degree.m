@@ -8,8 +8,8 @@ h_totaldistance = abs(h_ending - h_starting);
 h_distance = abs(h_ending - h_current);
 h_percent_completed = h_distance/h_totaldistance;
 
-v_totaldistance = v_max - v_starting
-new_v_degree = v_starting + v_totaldistance * abs(sin(h_percent_completed * pi))
+v_totaldistance = v_max - v_starting;
+new_v_degree = v_starting + v_totaldistance * abs(sin(h_percent_completed * pi));
 %new_v_degree = v_starting + v_totaldistance * .5*abs(sin(h_percent_completed * pi))
 
 
