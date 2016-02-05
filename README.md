@@ -1,4 +1,4 @@
 # PicturePlot
 A matlab package designed to help in visualizing multidimensional scaling (MDS) solutions for sets of images. 
 
-![Demonstration of Camera Tracking](https://i1.someimage.com/jIbnswj.gif)
+<a href='http://someimage.com/jIbnswj' target='_blank'><img src='http://t1.someimage.com/jIbnswj.jpg' border='0'></a>
