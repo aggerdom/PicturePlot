@@ -111,6 +111,7 @@ classdef PicturePlot
         %% rotatetocamera: Rotates the image frame to face the camera
         function rotatetocamera(obj, h)
             %% Pull the data from the handle to get the homogenized vectors for each corner
+            
             for i = 1:4
                 d(i).v = h.corners(i).centeredv;
             end
@@ -148,10 +149,10 @@ classdef PicturePlot
                 newy(r,c) = h.corners(i).afteroffset(2);
                 newz(r,c) = h.corners(i).afteroffset(3);
             end
-            h.XData = newx;
-            h.YData = newy;
-            h.ZData = newz;
-            refreshdata
+            set(h,'XData',newx,'YData',newy,'ZData',newz)
+%             h.XData = newx;
+%             h.YData = newy;
+%             h.ZData = newz;
         end
         %% rotatealltocamera: Loops over each image in the plot and orients it to face camer
         function rotatealltocamera(obj,varargin)
@@ -159,6 +160,7 @@ classdef PicturePlot
                 tmphandle = handle(obj.imageHandles(i_));
                 obj.rotatetocamera(tmphandle);
             end
+%             refreshdata
         end
     end
 end
