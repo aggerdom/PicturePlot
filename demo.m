@@ -77,24 +77,8 @@ xyViewButton = uicontrol(...,
     'Callback','view([0,90])');
 
 
-%% Creating a Radio Button to Toggle The Display of Axes On and Off.
-% From here on out the final parts of this demonstration get a little hacky
-% in order to avoid having to specify the callbacks for our UI functions as
-% separate scripts. The basic premise is to create the code that we want to
-% execute, use a semicolon to end each line, and join them all into one
-% long line that is evaluated a button is pressed. 
-
-axistoggle = uicontrol(...
-    'Style','radiobutton',...
-    'String','Show Axes',... % Label for the button
-    'Value',1,...            % Default to checked
-    'Position',[80 0 100 20],... % [xoffset,yoffset,xwidth,ywidth] relative to the bottomleft corner
-    'Callback',...
-    ['if axistoggle.Value==1;',...
-    'axis on;',...
-    'else;',...
-    'axis off;',...
-    'end']); % note that I'm just joining joining these statements and matlab is calling eval on the result
+%% Creating a Some UI Controls To Simplify Things
+axistoggle = create_axis_toggle([80, 0, 100, 20]);
 
 %% Setting the pictures to pivot after each rotation of the plot
 % Toggle to control whether rotation events caused by the user also
