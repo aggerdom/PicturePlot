@@ -1,3 +1,7 @@
+%% Demonstration Script For The PicturePlot Package
+%% Part 1: Basic Use
+% In order to use the picture plot package:
+
 close all
 clear all
 demoimages = {'coins.png',...
@@ -29,26 +33,33 @@ d = randi([-10,10],[length(demoimages),3]);
 imagecoords.X = d(:,1);
 imagecoords.Y = d(:,2);
 imagecoords.Z = d(:,3);
-%%
+
 myplotinstance = PicturePlot(imagecoords.X,imagecoords.Y,imagecoords.Z,demoimages',2);
 
+%% Demonstration of overloading
+close 1
+
+possibleEdgeColors = {[0,0,1],[0,1,0],[1,0,0]};
+edgeColors = {};
+for i = 1:length(demoimages)
+    edgecolors{i} = possibleEdgeColors{randi([1,3])};
+end
+myplotinstance = PicturePlot(imagecoords.X,imagecoords.Y,imagecoords.Z,demoimages',2,'EdgeColor',edgecolors);
 %% Add some UI elements to make it more easy to work with and do some other
-% stuff ot the plot
 axis('vis3d') % enable rigid rotations, and disable auto scaling of axes
 
+%% Add a button that rotates the images to face the camera
 
-
-
-%% Add a button to rotate the images to face the camera
-% the function  add_rotate_to_camera_button('myplotinstance') also works 
-% but the position needs to be fixed in that function definition
 rotateAllButton = uicontrol(...,
      'Style','pushbutton',...
      'String','RotateToCamera',...
      'Position',[200 0 200 20],...
      'Callback','myplotinstance.rotatealltocamera()');
 
-%% View Control Buttons: Buttons that move the camera to face the xyplane, xzplane, and yz plane
+%% Creating View Control Buttons
+% To simplify the process of orienting the plot. It would be nice to have
+% some buttons that move the camera to face the xyplane, xzplane, or the
+% yz plane
 xzViewButton = uicontrol(...,
     'Style','pushbutton',...
     'String','view XZ',...
@@ -66,9 +77,13 @@ xyViewButton = uicontrol(...,
     'Callback','view([0,90])');
 
 
-%% Radio Button to Toggle The Display of Axes On and Off.
-% A potentially good extension of this would be the use quiver3 to draw the
-% axes in using arrows
+%% Creating a Radio Button to Toggle The Display of Axes On and Off.
+% From here on out the final parts of this demonstration get a little hacky
+% in order to avoid having to specify the callbacks for our UI functions as
+% separate scripts. The basic premise is to create the code that we want to
+% execute, use a semicolon to end each line, and join them all into one
+% long line that is evaluated a button is pressed. 
+
 axistoggle = uicontrol(...
     'Style','radiobutton',...
     'String','Show Axes',... % Label for the button
@@ -81,7 +96,8 @@ axistoggle = uicontrol(...
     'axis off;',...
     'end']); % note that I'm just joining joining these statements and matlab is calling eval on the result
 
-%% Toggle to control whether rotation events caused by the user also
+%% Setting the pictures to pivot after each rotation of the plot
+% Toggle to control whether rotation events caused by the user also
 % cause the images to pivot after the camera has stopped moving.
 % Ideally I would have it so that the images pivot continuously as the plot
 % is moving but the code in the myplotclass file needs to be cleaned up to
@@ -99,7 +115,7 @@ rotationFollowToggleVar.Enable = 'on';
 followRotationToggle = uicontrol(...
     'Style','radiobutton',...
     'String','followcamera',... % Label for the button
-    'Value',0,...            % Default to checked
+    'Value',0,...               % Default to un-checked
     'Position',[80 20 100 20],... % [xoffset,yoffset,xwidth,ywidth] relative to the bottomleft corner
     'Callback',...
     [...

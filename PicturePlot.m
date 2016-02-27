@@ -1,27 +1,47 @@
 classdef PicturePlot
     properties
-        picture_size
-        imageHandles
-        imageCoordinates
-        uielements = struct() % Initializing this as a public field for storing user interface elements
-        %% Functions to create rotation matrices that rotate a homogenized 
-        % point (x,y,z,1) by some amount specified in radians about each axis.
+        picture_size % (float) How large each image should be
+        imageHandles % (array) Handles for the object handles corresponding to each image
+        uielements = struct() % A public field for storing user interface elements
+        % Functions to create rotation matrix to rotate a homogenized point (x,y,z,1) by some amount specified in radians about X-Axis.
         Rx = @(rotationAroundX)[1,0,0,0
-                                0,cos(rotationAroundX),-sin(rotationAroundX),0
-                                0,sin(rotationAroundX),cos(rotationAroundX),0
-                                0,0,0,1];
+            0,cos(rotationAroundX),-sin(rotationAroundX),0
+            0,sin(rotationAroundX),cos(rotationAroundX),0
+            0,0,0,1];
+        % Functions to create rotation matrix to rotate a homogenized point (x,y,z,1) by some amount specified in radians about Y-Axis.
         Ry = @(rotationAroundY)[cos(rotationAroundY),0,sin(rotationAroundY),0
-                                0,1,0,0
-                                -sin(rotationAroundY),0,cos(rotationAroundY),0
-                                0,0,0,1];
+            0,1,0,0
+            -sin(rotationAroundY),0,cos(rotationAroundY),0
+            0,0,0,1];
+        % Functions to create rotation matrix to rotate a homogenized point (x,y,z,1) by some amount specified in radians about Z-Axis.
         Rz = @(rotationAroundZ)[cos(rotationAroundZ),-sin(rotationAroundZ),0,0
-                                sin(rotationAroundZ),cos(rotationAroundZ),0,0
-                                0,0,1,0
-                                0,0,0,1];
+            sin(rotationAroundZ),cos(rotationAroundZ),0,0
+            0,0,1,0
+            0,0,0,1];
     end
     methods
-        %% MyPlot: Constructor Function
         function [myPlotInstance] = PicturePlot(X,Y,Z,picturePaths,picture_size,varargin)
+            % PicturePlot: Constructor Function
+            % If the constructor function is overloaded, it follows close
+            % to the matlab convention, alternating between the property
+            % name to set and an array containing the value to set for that
+            % property for each image.
+            %
+            %  [Example: Setting the edge colors for images] 
+            %  X = [1:3]
+            %  Y = [1:3]
+            %  Z = [1:3]
+            %  picturesize = 2
+            %  picturePaths = {'./imgs/someimage1.png',
+            %                  './imgs/someimage2.png',
+            %                  './imgs/someimage3.png'}
+            %  edgecolors = {'red', 'blue','green'}
+            %  myPlotInstance = PicturePlot(X,Y,Z,...
+            %                               picturePaths,...
+            %                               picture_size,...
+            %                               'edgecolor',edgecolors)
+            % 
+            
             for dataindex = 1:length(X)
                 myPlotInstance.imageHandles(dataindex) = myPlotInstance.addimg(...
                     X(dataindex),Y(dataindex),Z(dataindex),picture_size,picturePaths{dataindex});
@@ -29,10 +49,11 @@ classdef PicturePlot
             end
             axis equal
             view([45,45])
+            
+            % Parse extra arguments if the construction function is
+            % overloaded
             i = 1;
-            argfound = false;
-
-            %is_pseudoint = @(x)(strcmp(class(x),'double')&&(sum(find(size(x)>1))==0)); % Function to check for single numbers since 3 and [3,3] are both doubles in matlab
+            argfound = false; % Flag for parsing extra arguments
             while i <= length(varargin)
                 % if the constructor function is overloaded, then it should
                 % take the matlab convention of alternating between the
@@ -44,28 +65,27 @@ classdef PicturePlot
                         argfound = true;
                     case false
                         if argfound
-                           for j = 1:length(myPlotInstance.imageHandles)
-                            % This should probably be cleaned up at a later point in time, the idea is that I'm trying to allow for the possiblity that
-                            % a single value might be passed or some sort of array might be passed. The typechecking here is hackish at best.
-    %                            if ischar(class(varargin{i})) || is_pseudoint(varargin{i}) || islogical(varargin{i})
-    %                                valuetosetto = varargin{i}
-    %                            elseif iscell(varargin{i})
-                                   valuetosetto = varargin{i}{j};
-    %                            end
-    %                            disp(valuetosetto)
-    %                            disp(valuetoset);
-                               h_ = myPlotInstance.imageHandles(j);
-                               set(h_,valuetoset,valuetosetto);
-                           end
-                           argfound = false;
+                            for j = 1:length(myPlotInstance.imageHandles)
+                                valuetosetto = varargin{i}{j};
+                                h_ = myPlotInstance.imageHandles(j);
+                                set(h_,valuetoset,valuetosetto);
+                            end
+                            argfound = false;
                         end
                 end
                 i = i + 1;
             end
         end
-        %
-        %% addimg: adds a image to the plot
+        
+
         function [picture_handle] = addimg(obj,x,y,z,picture_size,imagename)
+            % addimg: Adds an image to the plot.
+            %     x = <scalar>
+            %     y = <scalar>
+            %     z = <scalar>
+            %     picturesize = <scalar>
+            %     imagename = <Path to the image>
+            
             % The x data for the image corners
             xImage = [-picture_size, picture_size;...
                       -picture_size, picture_size];
@@ -79,7 +99,10 @@ classdef PicturePlot
                 img = imread(imagename);
                 picture_handle = surf(xImage,yImage,zImage,'CData',img,'FaceColor','texturemap');
             catch me
-                global fup
+                % In the case of an error, make the error message global,
+                % and print the name of the image that caused either the
+                % imread subroutine or the surf subroutine to fail
+                global fup;
                 fup = me
                 fprintf('There was a problem reading file "%s"\n',imagename);
                 keyboard
@@ -91,9 +114,9 @@ classdef PicturePlot
             addprop(picture_handle,'corners');
             for i = 1:4
                 picture_handle.corners(i).centeredv = [xImage(i)
-                                                       yImage(i)
-                                                       zImage(i)
-                                                       1        ];
+                    yImage(i)
+                    zImage(i)
+                    1        ];
             end
             %    b. add property to store the xyz offset from the origin
             addprop(picture_handle, 'xyzoffset');
@@ -107,19 +130,19 @@ classdef PicturePlot
             view([45,45])
             obj.rotatetocamera(picture_handle)
         end
-        %
-        %% rotatetocamera: Rotates the image frame to face the camera
+        
         function rotatetocamera(obj, h)
-            %% Pull the data from the handle to get the homogenized vectors for each corner
+            % rotatetocamera: Rotates the image frame to face the camera
+            % Pull the data from the handle to get the homogenized vectors for each corner
             
             for i = 1:4
                 d(i).v = h.corners(i).centeredv;
             end
-            %% Get the azimuth and elevation of camera in radians
+            % Get the azimuth and elevation of camera in radians
             [az,el] = view;
             az = deg2rad(az);
             el = deg2rad(el);
-            %% Calculate the new cordinates of each corner
+            % Calculate the new cordinates of each corner
             newx = zeros(2,2);
             newy = zeros(2,2);
             newz = zeros(2,2);
@@ -150,17 +173,13 @@ classdef PicturePlot
                 newz(r,c) = h.corners(i).afteroffset(3);
             end
             set(h,'XData',newx,'YData',newy,'ZData',newz)
-%             h.XData = newx;
-%             h.YData = newy;
-%             h.ZData = newz;
         end
-        %% rotatealltocamera: Loops over each image in the plot and orients it to face camer
         function rotatealltocamera(obj,varargin)
+            % ROTATEALLTOCAMERA: Loops over each image in the plot, and orient it to face the camera
             for i_ = 1:length(obj.imageHandles)
                 tmphandle = handle(obj.imageHandles(i_));
                 obj.rotatetocamera(tmphandle);
             end
-%             refreshdata
         end
     end
 end
